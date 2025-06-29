@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Code Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .theme-dinosaur {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%);
+        }
+
+        .theme-newzealand {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 50%, #059669 100%);
+        }
+
+        .theme-australia {
+            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #eab308 100%);
+        }
+
+        /* Theme Selection Styles */
+        .theme-selection {
+            background: linear-gradient(145deg, #f4f1e8, #e8dcc0);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            border: 3px solid #8b4513;
+        }
+
+        .theme-selection h1 {
+            font-size: 3rem;
+            color: #2d5016;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .theme-selection p {
+            font-size: 1.4rem;
+            color: #4a7c59;
+            margin-bottom: 40px;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .theme-card {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 20px;
+            padding: 30px;
+            border: 3px solid #8b4513;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .theme-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .theme-card.selected {
+            border-color: #32cd32;
+            background: linear-gradient(145deg, #f0fff0, #e6ffe6);
+            transform: translateY(-5px);
+        }
+
+        .theme-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .theme-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .theme-description {
+            font-size: 1rem;
+            color: #4a7c59;
+            line-height: 1.4;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .start-button.enabled {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .start-button.enabled:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Main App Styles */
+        .app-container {
+            background: linear-gradient(145deg, #f4f1e8, #e8dcc0);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            padding: 35px;
+            width: 90%;
+            max-width: 850px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #8b4513;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.8rem;
+            color: #2d5016;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #4a7c59;
+            font-weight: bold;
+        }
+
+        .mascot {
+            font-size: 4rem;
+            animation: bounce 2.5s ease-in-out infinite;
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(0deg); }
+            40% { transform: translateY(-15px) rotate(-3deg); }
+            60% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        .level-indicator {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 2px solid #006400;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .challenge-navigation {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #cbd5e0;
+            border: 2px solid #8b4513;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-dot.completed {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+        }
+
+        .nav-dot.current {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .progress-bar {
+            background: #8b4513;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 25px 0;
+            border: 2px solid #654321;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #ff6b35, #f7931e, #ffa500);
+            height: 100%;
+            width: 0;
+            transition: width 0.8s ease;
+        }
+
+        .game-area {
+            background: linear-gradient(135deg, #f0e68c, #f5f5dc);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #8b4513;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .challenge {
+            margin-bottom: 25px;
+        }
+
+        .challenge-title {
+            font-size: 1.6rem;
+            color: #2d5016;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            flex-wrap: wrap;
+        }
+
+        .concept-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 5px 2px;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: linear-gradient(145deg, #2f4f2f, #1a3a1a);
+            color: #98fb98;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            border: 2px solid #556b2f;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            line-height: 1.6;
+        }
+
+        .python-keyword { color: #ffb347; font-weight: bold; }
+        .python-string { color: #87ceeb; }
+        .python-comment { color: #a0a0a0; font-style: italic; }
+
+        .drop-zone {
+            border: 3px dashed #8b4513;
+            border-radius: 15px;
+            padding: 12px 18px;
+            min-height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b4513;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            background: rgba(255,255,255,0.3);
+            min-width: 120px;
+            vertical-align: middle;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #32cd32;
+            background-color: #f0fff0;
+            color: #006400;
+            transform: scale(1.02);
+        }
+
+        .drop-zone.filled {
+            background: linear-gradient(135deg, #90ee90, #98fb98);
+            border-color: #228b22;
+            color: #006400;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .interactive-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .drag-item {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 25px;
+            cursor: grab;
+            user-select: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid #d2691e;
+        }
+
+        .drag-item:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .button {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid #d2691e;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .result-area {
+            background: linear-gradient(135deg, #f0fff0, #e6ffe6);
+            border: 3px solid #32cd32;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-area.show {
+            display: block;
+            animation: slideIn 0.7s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .celebration.show {
+            animation: celebrate 2.5s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(5deg); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .fact-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffec8c);
+            border: 3px solid #b8860b;
+            border-radius: 15px;
+            padding: 15px;
+            max-width: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.5s ease-in-out;
+            z-index: 1000;
+        }
+
+        .fact-popup.show {
+            transform: translateX(0);
+        }
+
+        .fact-popup h4 {
+            color: #8b4513;
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .fact-popup p {
+            color: #2d5016;
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .fact-close-btn {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #8b4513;
+        }
+
+        .fact-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .fact-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Selection Screen -->
+    <div class="theme-selection" id="themeSelection">
+        <h1>🌟 Choose Your Coding Adventure! 🌟</h1>
+        <p>Pick a theme to start learning Python with your favorite animals!</p>
+        
+        <div class="theme-grid">
+            <div class="theme-card" onclick="selectTheme('dinosaur')">
+                <span class="theme-icon">🦕</span>
+                <div class="theme-title">Dinosaur Adventure</div>
+                <div class="theme-description">Journey back to prehistoric times! Code with T-Rex, Triceratops, and other amazing dinosaurs while learning Python basics.</div>
+            </div>
+            
+            <div class="theme-card" onclick="selectTheme('newzealand')">
+                <span class="theme-icon">🥝</span>
+                <div class="theme-title">New Zealand Wildlife</div>
+                <div class="theme-description">Explore Aotearoa! Learn Python with kiwi birds, tuataras, and other unique New Zealand animals.</div>
+            </div>
+            
+            <div class="theme-card" onclick="selectTheme('australia')">
+                <span class="theme-icon">🦘</span>
+                <div class="theme-title">Australian Wildlife</div>
+                <div class="theme-description">G'day mate! Code with kangaroos, koalas, and other amazing Australian animals down under!</div>
+            </div>
+        </div>
+        
+        <button class="start-button" id="startButton" onclick="startAdventure()">
+            Start Learning! 🚀
+        </button>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container" id="appContainer" style="display: none;">
+        <div class="header">
+            <div class="mascot" id="mascot1">🦕</div>
+            <h1 class="title" id="appTitle">Wildlife Code Adventure</h1>
+            <div class="mascot" id="mascot2">🦖</div>
+            <p class="subtitle" id="appSubtitle">Learn Python with amazing animals!</p>
+        </div>
+
+        <div class="level-indicator" id="levelIndicator">🦴 Level 1: First Steps</div>
+        
+        <div class="challenge-navigation">
+            <div class="nav-dot current" id="nav1" onclick="goToChallenge(1)">1</div>
+            <div class="nav-dot" id="nav2" onclick="goToChallenge(2)">2</div>
+            <div class="nav-dot" id="nav3" onclick="goToChallenge(3)">3</div>
+            <div class="nav-dot" id="nav4" onclick="goToChallenge(4)">4</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="game-area">
+            <!-- Challenge 1: Print Statement -->
+            <div class="challenge" id="challenge1">
+                <h3 class="challenge-title">
+                    <span>🦕</span>
+                    <span>Make the Animal Talk!</span>
+                    <span class="concept-badge">print()</span>
+                </h3>
+                <p>Help our animal communicate! Drag the correct sound to complete the code:</p>
+                
+                <div class="code-block">
+                    <span class="python-keyword">print</span>(<div class="drop-zone" id="dropZone1">Drop sound here!</div>)
+                    <br><span class="python-comment"># This makes the animal speak!</span>
+                </div>
+                
+                <div class="interactive-section">
+                    <div class="drag-item" draggable="true" data-value='"Hello!"'>"Hello!"</div>
+                    <div class="drag-item" draggable="true" data-value='"Meow"'>"Meow"</div>
+                    <div class="drag-item" draggable="true" data-value='42'>42</div>
+                </div>
+                
+                <button class="button" onclick="checkAnswer(1)">Make Animal Talk! 🗣️</button>
+                
+                <div class="result-area" id="result1">
+                    <h4>🎤 Animal Says:</h4>
+                    <div id="output1"></div>
+                </div>
+            </div>
+
+            <!-- Challenge 2: Math -->
+            <div class="challenge" id="challenge2" style="display: none;">
+                <h3 class="challenge-title">
+                    <span>🔢</span>
+                    <span>Item Counter!</span>
+                    <span class="concept-badge">integers</span>
+                    <span class="concept-badge">math</span>
+                </h3>
+                <p>Count the total items found! Help with the math:</p>
+                
+                <div class="code-block">
+                    <span class="python-keyword">print</span>(<div class="drop-zone" id="dropZone2">Items found!</div> + 12)
+                    <br><span class="python-comment"># Adding to the collection!</span>
+                </div>
+                
+                <div class="interactive-section">
+                    <div class="drag-item" draggable="true" data-value='8'>8</div>
+                    <div class="drag-item" draggable="true" data-value='15'>15</div>
+                    <div class="drag-item" draggable="true" data-value='5'>5</div>
+                </div>
+                
+                <button class="button" onclick="checkAnswer(2)">Count Items! 🧮</button>
+                
+                <div class="result-area" id="result2">
+                    <h4>📊 Total Count:</h4>
+                    <div id="output2"></div>
+                </div>
+            </div>
+
+            <!-- Challenge 3: Lists -->
+            <div class="challenge" id="challenge3" style="display: none;">
+                <h3 class="challenge-title">
+                    <span>📋</span>
+                    <span>Animal Group List!</span>
+                    <span class="concept-badge">lists</span>
+                </h3>
+                <p>Create a list of animals! Drag animals to build your Python list:</p>
+                
+                <div class="code-block">
+                    <span class="python-keyword">animal_list</span> = [<div class="drop-zone" id="listZone1">First</div>, <div class="drop-zone" id="listZone2">Second</div>, <div class="drop-zone" id="listZone3">Third</div>]
+                    <br><span class="python-comment"># Lists store multiple items in order!</span>
+                </div>
+                
+                <div class="interactive-section">
+                    <div class="drag-item" draggable="true" data-value='"Lion"'>"Lion"</div>
+                    <div class="drag-item" draggable="true" data-value='"Tiger"'>"Tiger"</div>
+                    <div class="drag-item" draggable="true" data-value='"Bear"'>"Bear"</div>
+                    <div class="drag-item" draggable="true" data-value='"Eagle"'>"Eagle"</div>
+                </div>
+                
+                <button class="button" onclick="checkAnswer(3)">Build List! 📝</button>
+                
+                <div class="result-area" id="result3">
+                    <h4>🦁 Your Animal List:</h4>
+                    <div id="output3"></div>
+                </div>
+            </div>
+
+            <!-- Challenge 4: Strings -->
+            <div class="challenge" id="challenge4" style="display: none;">
+                <h3 class="challenge-title">
+                    <span>📖</span>
+                    <span>Name Magic!</span>
+                    <span class="concept-badge">strings</span>
+                    <span class="concept-badge">methods</span>
+                </h3>
+                <p>Use string methods to transform animal names! Choose the right operation:</p>
+                
+                <div class="code-block">
+                    <span class="python-keyword">animal_name</span> = <span class="python-string">"mighty lion"</span><br>
+                    <span class="python-keyword">print</span>(animal_name.<div class="drop-zone" id="stringZone">method</div>())
+                    <br><span class="python-comment"># Strings are text that we can transform!</span>
+                </div>
+                
+                <div class="interactive-section">
+                    <div class="drag-item" draggable="true" data-value='upper'>upper</div>
+                    <div class="drag-item" draggable="true" data-value='title'>title</div>
+                    <div class="drag-item" draggable="true" data-value='lower'>lower</div>
+                </div>
+                
+                <button class="button" onclick="checkAnswer(4)">Transform Name! ✨</button>
+                
+                <div class="result-area" id="result4">
+                    <h4>🔤 Transformed Name:</h4>
+                    <div id="output4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    
+    <!-- Fact Popup -->
+    <div class="fact-popup" id="factPopup">
+        <button class="fact-close-btn" onclick="closeFact()">&times;</button>
+        <h4 id="factTitle">🦕 Did You Know?</h4>
+        <p id="factText"></p>
+    </div>
+    
+    <!-- Floating Fact Button -->
+    <button class="fact-button" onclick="showRandomFact()" title="Get a random fact!">
+        💡
+    </button>
+
+    <script>
+        // Global variables
+        let currentLevel = 1;
+        let progress = 0;
+        let completedChallenges = 0;
+        let totalChallenges = 4;
+        let selectedTheme = null;
+        let lastFactIndex = -1;
+
+        // Theme configurations
+        const themes = {
+            dinosaur: {
+                title: "DinoCode Adventure",
+                subtitle: "Code with the dinosaurs in Jurassic Python!",
+                mascots: ["🦕", "🦖"],
+                levelPrefix: "🦴 Fossil Level",
+                celebrationEmojis: ["🦕", "🦖", "🎉", "🌟", "🦴", "🥚"],
+                challenge1: {
+                    title: "Make the T-Rex Roar!",
+                    description: "Help our T-Rex communicate!",
+                    correctAnswer: '"ROOOOOAR!"',
+                    options: ['"ROOOOOAR!"', '"Meow"', '42'],
+                    successText: "ROOOOOAR! 🦖"
+                },
+                challenge2: {
+                    title: "Dino Fossil Counter!",
+                    description: "The Triceratops found some fossils!",
+                    successText: "fossils! 🦴✨"
+                },
+                challenge3: {
+                    title: "Dino Herd List!",
+                    description: "Create a list of dinosaurs in our herd!",
+                    options: ['"T-Rex"', '"Triceratops"', '"Stegosaurus"', '"Brontosaurus"']
+                },
+                challenge4: {
+                    title: "Dino Name Magic!",
+                    description: "Transform dinosaur names!",
+                    testString: "tyrannosaurus rex"
+                }
+            },
+            newzealand: {
+                title: "Kiwi Code Quest",
+                subtitle: "Learn Python with New Zealand's amazing wildlife!",
+                mascots: ["🥝", "🐧"],
+                levelPrefix: "🌿 Nature Level",
+                celebrationEmojis: ["🥝", "🐧", "🎉", "🌟", "🌿", "🏔️"],
+                challenge1: {
+                    title: "Make the Kiwi Call!",
+                    description: "Help our kiwi bird communicate!",
+                    correctAnswer: '"Kee-wee!"',
+                    options: ['"Kee-wee!"', '"Moo"', '42'],
+                    successText: "Kee-wee! 🥝"
+                },
+                challenge2: {
+                    title: "Kakapo Feather Counter!",
+                    description: "The kakapo found some feathers!",
+                    successText: "feathers! 🪶✨"
+                },
+                challenge3: {
+                    title: "Wildlife Group List!",
+                    description: "Create a list of New Zealand animals!",
+                    options: ['"Kiwi"', '"Tuatara"', '"Kakapo"', '"Weta"']
+                },
+                challenge4: {
+                    title: "Animal Name Magic!",
+                    description: "Transform animal names!",
+                    testString: "yellow eyed penguin"
+                }
+            },
+            australia: {
+                title: "Aussie Code Safari",
+                subtitle: "Learn Python with Australia's incredible wildlife!",
+                mascots: ["🦘", "🐨"],
+                levelPrefix: "🌏 Outback Level",
+                celebrationEmojis: ["🦘", "🐨", "🎉", "🌟", "🌿", "🪃"],
+                challenge1: {
+                    title: "Make the Kangaroo Hop!",
+                    description: "Help our kangaroo communicate!",
+                    correctAnswer: '"Boing boing!"',
+                    options: ['"Boing boing!"', '"Woof"', '42'],
+                    successText: "Boing boing! 🦘"
+                },
+                challenge2: {
+                    title: "Eucalyptus Leaf Counter!",
+                    description: "The koala found some eucalyptus leaves!",
+                    successText: "leaves! 🌿✨"
+                },
+                challenge3: {
+                    title: "Aussie Animal List!",
+                    description: "Create a list of Australian animals!",
+                    options: ['"Kangaroo"', '"Koala"', '"Wombat"', '"Echidna"']
+                },
+                challenge4: {
+                    title: "Animal Name Magic!",
+                    description: "Transform animal names!",
+                    testString: "tasmanian devil"
+                }
+            }
+        };
+
+        // Facts arrays
+        const facts = {
+            dinosaur: [
+                { title: "🦕 Gentle Giants", text: "Brontosaurus could weigh as much as 4 elephants but only ate plants!" },
+                { title: "🦖 T-Rex Arms", text: "T-Rex had tiny arms but they were super strong! Each arm could lift 400 pounds." },
+                { title: "🥚 Dino Babies", text: "Baby dinosaurs were called hatchlings, just like baby birds today!" },
+                { title: "🦴 Fossil Hunters", text: "The first dinosaur bone was found over 200 years ago!" },
+                { title: "🐦 Living Dinosaurs", text: "Birds ARE dinosaurs! They're the only dinosaurs still alive today." }
+            ],
+            newzealand: [
+                { title: "🥝 Kiwi Birds", text: "Kiwis are the only birds with nostrils at the end of their beaks!" },
+                { title: "🐧 Yellow-eyed Penguins", text: "Yellow-eyed penguins are one of the world's rarest penguins!" },
+                { title: "🦎 Tuataras", text: "Tuataras have a third eye on top of their heads!" },
+                { title: "🦜 Kakapos", text: "Kakapos are the world's only flightless parrots!" },
+                { title: "🌿 Flax Plants", text: "New Zealand flax is super strong! Māori people used it to make ropes and clothing." }
+            ],
+            australia: [
+                { title: "🦘 Kangaroos", text: "Kangaroos can't walk backwards! Their big tail only lets them move forward." },
+                { title: "🐨 Koalas", text: "Koalas sleep 18-22 hours a day! They get water from eucalyptus leaves." },
+                { title: "🪃 Wombats", text: "Wombats poop cubes! Their square droppings don't roll away." },
+                { title: "🦔 Echidnas", text: "Echidnas are one of only two mammals that lay eggs!" },
+                { title: "🐊 Saltwater Crocodiles", text: "Saltwater crocodiles can hold their breath for an hour!" }
+            ]
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme selection is shown by default
+        });
+
+        function selectTheme(theme) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            event.target.closest('.theme-card').classList.add('selected');
+            
+            selectedTheme = theme;
+            
+            // Enable start button
+            const startButton = document.getElementById('startButton');
+            startButton.classList.add('enabled');
+            
+            // Update body background based on theme
+            document.body.className = `theme-${theme}`;
+        }
+
+        function startAdventure() {
+            if (!selectedTheme) return;
+            
+            // Hide theme selection
+            document.getElementById('themeSelection').style.display = 'none';
+            
+            // Show main app
+            document.getElementById('appContainer').style.display = 'block';
+            
+            // Apply theme to the app
+            applyTheme(selectedTheme);
+            
+            // Initialize the app functionality
+            setupDragAndDrop();
+            updateNavigation();
+            
+            // Show a welcome fact after 2 seconds
+            setTimeout(() => {
+                showRandomFact();
+            }, 2000);
+        }
+
+        function applyTheme(theme) {
+            const config = themes[theme];
+            
+            // Update title and subtitle
+            document.getElementById('appTitle').textContent = config.title;
+            document.getElementById('appSubtitle').textContent = config.subtitle;
+            
+            // Update mascots
+            document.getElementById('mascot1').textContent = config.mascots[0];
+            document.getElementById('mascot2').textContent = config.mascots[1];
+            
+            // Update challenge content
+            updateChallengeContent(theme);
+        }
+
+        function updateChallengeContent(theme) {
+            const config = themes[theme];
+            
+            // Update challenge 1
+            document.querySelector('#challenge1 .challenge-title span:nth-child(2)').textContent = config.challenge1.title;
+            document.querySelector('#challenge1 p').textContent = config.challenge1.description;
+            
+            const dragItems1 = document.querySelectorAll('#challenge1 .drag-item');
+            config.challenge1.options.forEach((option, index) => {
+                if (dragItems1[index]) {
+                    dragItems1[index].textContent = option;
+                    dragItems1[index].dataset.value = option;
+                }
+            });
+            
+            // Update challenge 2
+            document.querySelector('#challenge2 .challenge-title span:nth-child(2)').textContent = config.challenge2.title;
+            document.querySelector('#challenge2 p').textContent = config.challenge2.description;
+            
+            // Update challenge 3
+            document.querySelector('#challenge3 .challenge-title span:nth-child(2)').textContent = config.challenge3.title;
+            document.querySelector('#challenge3 p').textContent = config.challenge3.description;
+            
+            const dragItems3 = document.querySelectorAll('#challenge3 .drag-item');
+            config.challenge3.options.forEach((option, index) => {
+                if (dragItems3[index]) {
+                    dragItems3[index].textContent = option;
+                    dragItems3[index].dataset.value = option;
+                }
+            });
+            
+            // Update challenge 4
+            document.querySelector('#challenge4 .challenge-title span:nth-child(2)').textContent = config.challenge4.title;
+            document.querySelector('#challenge4 p').textContent = config.challenge4.description;
+        }
+
+        function setupDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.value);
+                    this.style.opacity = '0.6';
+                });
+
+                item.addEventListener('dragend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const value = e.dataTransfer.getData('text/plain');
+                    this.textContent = value;
+                    this.classList.remove('drag-over');
+                    this.classList.add('filled');
+                    this.dataset.value = value;
+                });
+            });
+        }
+
+        function checkAnswer(challengeNumber) {
+            const config = themes[selectedTheme];
+            let dropZone, result, output;
+            let correct = false;
+            let outputText = '';
+
+            if (challengeNumber === 1) {
+                dropZone = document.getElementById('dropZone1');
+                result = document.getElementById('result1');
+                output = document.getElementById('output1');
+                
+                if (!dropZone.dataset.value) {
+                    alert(`${config.mascots[0]} The animal needs your help! Drag an answer first!`);
+                    return;
+                }
+                
+                if (dropZone.dataset.value === config.challenge1.correctAnswer) {
+                    outputText = config.challenge1.successText;
+                    correct = true;
+                } else {
+                    outputText = dropZone.dataset.value.replace(/['"]/g, '') + ' 🤔';
+                }
+            } else if (challengeNumber === 2) {
+                dropZone = document.getElementById('dropZone2');
+                result = document.getElementById('result2');
+                output = document.getElementById('output2');
+                
+                if (!dropZone.dataset.value) {
+                    alert('🔢 Select some items first!');
+                    return;
+                }
+                
+                const num = parseInt(dropZone.dataset.value);
+                outputText = `${num + 12} ${config.challenge2.successText}`;
+                correct = true;
+            } else if (challengeNumber === 3) {
+                result = document.getElementById('result3');
+                output = document.getElementById('output3');
+                
+                const zones = [document.getElementById('listZone1'), document.getElementById('listZone2'), document.getElementById('listZone3')];
+                const values = zones.map(zone => zone.dataset.value).filter(val => val);
+                
+                if (values.length < 3) {
+                    alert(`${config.mascots[0]} Fill all three spots in your list!`);
+                    return;
+                }
+                
+                outputText = `Animal List: [${values.join(', ')}] ${config.mascots[0]}${config.mascots[1]}`;
+                correct = true;
+            } else if (challengeNumber === 4) {
+                dropZone = document.getElementById('stringZone');
+                result = document.getElementById('result4');
+                output = document.getElementById('output4');
+                
+                if (!dropZone.dataset.value) {
+                    alert('🔤 Choose a string method first!');
+                    return;
+                }
+                
+                const method = dropZone.dataset.value;
+                const name = config.challenge4.testString;
+                let transformedName = name;
+                
+                if (method === 'upper') transformedName = name.toUpperCase();
+                else if (method === 'title') transformedName = name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                else if (method === 'lower') transformedName = name.toLowerCase();
+                
+                outputText = `${transformedName} ${config.mascots[0]}`;
+                correct = true;
+            }
+
+            output.innerHTML = outputText;
+            result.classList.add('show');
+
+            if (correct) {
+                celebrate();
+                updateProgress();
+                markChallengeComplete(challengeNumber);
+                
+                setTimeout(() => {
+                    showRandomFact();
+                }, 1000);
+                
+                setTimeout(() => {
+                    nextChallenge();
+                }, 2500);
+            }
+        }
+
+        function celebrate() {
+            const config = themes[selectedTheme];
+            const celebration = document.getElementById('celebration');
+            const emojis = config.celebrationEmojis;
+            celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 2500);
+        }
+
+        function updateProgress() {
+            completedChallenges++;
+            progress = (completedChallenges / totalChallenges) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function markChallengeComplete(challengeNumber) {
+            const navDot = document.getElementById(`nav${challengeNumber}`);
+            navDot.classList.add('completed');
+            navDot.classList.remove('current');
+        }
+
+        function updateNavigation() {
+            for (let i = 1; i <= totalChallenges; i++) {
+                document.getElementById(`nav${i}`).classList.remove('current');
+            }
+            if (currentLevel <= totalChallenges) {
+                document.getElementById(`nav${currentLevel}`).classList.add('current');
+            }
+        }
+
+        function goToChallenge(challengeNum) {
+            for (let i = 1; i <= totalChallenges; i++) {
+                document.getElementById(`challenge${i}`).style.display = 'none';
+            }
+            
+            document.getElementById(`challenge${challengeNum}`).style.display = 'block';
+            currentLevel = challengeNum;
+            updateNavigation();
+            updateLevelIndicator();
+        }
+
+        function updateLevelIndicator() {
+            const config = themes[selectedTheme];
+            const levelNames = ['', 'First Steps', 'Number Fun', 'List Builder', 'Name Magic'];
+            document.getElementById('levelIndicator').innerHTML = 
+                `${config.levelPrefix} ${currentLevel}: ${levelNames[currentLevel]}`;
+        }
+
+        function nextChallenge() {
+            const currentChallenge = document.getElementById(`challenge${currentLevel}`);
+            currentLevel++;
+            
+            if (currentLevel <= totalChallenges) {
+                currentChallenge.style.display = 'none';
+                document.getElementById(`challenge${currentLevel}`).style.display = 'block';
+                updateNavigation();
+                updateLevelIndicator();
+            } else {
+                const config = themes[selectedTheme];
+                alert(`🎓 Amazing! You mastered Python concepts! You're now a ${config.title} Expert! ${config.mascots[0]}${config.mascots[1]}🌟`);
+                
+                setTimeout(() => {
+                    const celebration = document.getElementById('celebration');
+                    celebration.innerHTML = `🎓${config.mascots[0]}${config.mascots[1]}🎉`;
+                    celebration.classList.add('show');
+                    
+                    setTimeout(() => {
+                        celebration.classList.remove('show');
+                    }, 3000);
+                }, 500);
+            }
+        }
+
+        function showRandomFact() {
+            if (!selectedTheme) return;
+            
+            const themeFacts = facts[selectedTheme];
+            let factIndex;
+            
+            do {
+                factIndex = Math.floor(Math.random() * themeFacts.length);
+            } while (factIndex === lastFactIndex && themeFacts.length > 1);
+            
+            lastFactIndex = factIndex;
+            const fact = themeFacts[factIndex];
+            
+            document.getElementById('factTitle').textContent = fact.title;
+            document.getElementById('factText').textContent = fact.text;
+            
+            const popup = document.getElementById('factPopup');
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                closeFact();
+            }, 6000);
+        }
+        
+        function closeFact() {
+            document.getElementById('factPopup').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
